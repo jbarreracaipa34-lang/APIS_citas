@@ -31,7 +31,7 @@ class CitasController extends Controller
         }
 
         $cita = Citas::create($validator->validated());
-        return response()->json($cita, 200);
+        return response()->json($cita, 201);
     }
 
     public function show(string $id)

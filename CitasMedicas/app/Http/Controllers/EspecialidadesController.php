@@ -26,7 +26,7 @@ class EspecialidadesController extends Controller
         }
 
         $especialidad = Especialidades::create($validator->validated());
-        return response()->json($especialidad, 200);
+        return response()->json($especialidad, 201);
     }
 
     public function show(string $id)

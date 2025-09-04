@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('pacientes', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id')->unique();
             $table->string('nombre');
             $table->string('apellido');
             $table->enum('tipoDocumento', ['CC', 'TI', 'CE']);
@@ -20,6 +21,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('direccion')->nullable();
             $table->string('eps');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

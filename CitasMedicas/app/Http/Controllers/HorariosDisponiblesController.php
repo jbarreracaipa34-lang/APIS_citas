@@ -29,7 +29,7 @@ class HorariosDisponiblesController extends Controller
         }
 
         $horario = HorariosDisponibles::create($validator->validated());
-        return response()->json($horario, 200);
+        return response()->json($horario, 201);
     }
 
     public function show(string $id)
