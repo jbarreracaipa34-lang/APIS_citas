@@ -1,61 +1,150 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+#  API de Gestión de Citas Médicas
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Esta API ha sido desarrollada para la **gestión de citas médicas** por parte de los usuarios.  
 
-## About Laravel
+Permite realizar operaciones de registro, consulta, modificación y eliminación de citas, además de gestionar médicos, pacientes y especialidades.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Características principales
+- Registro de pacientes y médicos.
+- Creación, consulta, actualización y cancelación de citas.
+- Gestión de especialidades médicas.
+- Autenticación de usuarios mediante **sanctum**
+- Arquitectura basada en **MVC (Modelo-Vista-Controlador)**.
+- Implementado con **laravel**.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## Autenticación con Laravel Sanctum
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Para garantizar la seguridad de la API de citas médicas, se implementa **Laravel Sanctum**.  
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Esto permite a los usuarios autenticarse mediante **tokens personales** y acceder solo a los recursos autorizados.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+###  Instalación de Sanctum
+1. Instalar Sanctum:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```Json
+composer require laravel/sanctum
+```
 
-### Premium Partners
+## Endpoints de la API
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+La API está protegida con **Laravel Sanctum** y un middleware de roles.  
+Dependiendo del rol (**admin, medico, paciente**) se habilitan diferentes operaciones.
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+###  Autenticación
+| Método | Endpoint     | Descripción                  |
+|--------|-------------|------------------------------|
+| POST   | `/registrar` | Registro de usuario          |
+| POST   | `/login`    | Inicio de sesión             |
+| GET    | `/me`       | Ver perfil del usuario logueado *(requiere token)* |
+| POST   | `/logout`   | Cerrar sesión *(requiere token)* |
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+###  Endpoints para **Admin**
+*(requiere rol: admin)*
 
-## Security Vulnerabilities
+#### Citas
+| Método | Endpoint              | Descripción             |
+|--------|-----------------------|-------------------------|
+| GET    | `/citas`              | Listar todas las citas |
+| POST   | `/crearCitas`         | Crear una nueva cita   |
+| GET    | `/citas/{id}`         | Ver detalle de una cita|
+| PUT    | `/editarCitas/{id}`   | Editar cita existente  |
+| DELETE | `/eliminarCitas/{id}` | Eliminar cita          |
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+#### Especialidades
+| Método | Endpoint                       | Descripción                 |
+|--------|--------------------------------|-----------------------------|
+| POST   | `/crearEspecialidades`         | Crear nueva especialidad    |
+| PUT    | `/editarEspecialidades/{id}`   | Editar especialidad         |
+| DELETE | `/eliminarEspecialidades/{id}` | Eliminar especialidad       |
 
-## License
+#### Horarios
+| Método | Endpoint                 | Descripción                 |
+|--------|--------------------------|-----------------------------|
+| POST   | `/crearHorarios`         | Crear horario disponible    |
+| PUT    | `/editarHorarios/{id}`   | Editar horario              |
+| DELETE | `/eliminarHorarios/{id}` | Eliminar horario            |
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+#### Médicos
+| Método | Endpoint               | Descripción              |
+|--------|------------------------|--------------------------|
+| POST   | `/crearMedico`         | Registrar nuevo médico   |
+| PUT    | `/editarMedico/{id}`   | Editar médico            |
+| DELETE | `/eliminarMedico/{id}` | Eliminar médico          |
+
+#### Pacientes
+| Método | Endpoint                   | Descripción              |
+|--------|----------------------------|--------------------------|
+| GET    | `/pacientes`              | Listar pacientes         |
+| POST   | `/crearPacientes`         | Registrar paciente       |
+| PUT    | `/editarPacientes/{id}`   | Editar paciente          |
+| DELETE | `/eliminarPacientes/{id}` | Eliminar paciente        |
+
+---
+
+###  Endpoints para **Médico**
+*(requiere rol: medico)*
+
+| Método | Endpoint                           | Descripción                             |
+|--------|------------------------------------|-----------------------------------------|
+| GET    | `/horarios`                        | Listar todos los horarios               |
+| GET    | `/horarios/{id}`                   | Ver horario específico                  |
+| GET    | `/horariosDisponiblesPorMedico`    | Listar horarios disponibles del médico  |
+| GET    | `/medicosConEspecialidad`          | Médicos con especialidad asignada       |
+| GET    | `/medicosConHorarios`              | Médicos con horarios disponibles        |
+
+---
+
+###  Endpoints para **Paciente**
+*(requiere rol: paciente)*
+
+#### Especialidades y médicos
+| Método | Endpoint               | Descripción              |
+|--------|------------------------|--------------------------|
+| GET    | `/especialidades`      | Listar especialidades    |
+| GET    | `/especialidades/{id}` | Ver especialidad         |
+| GET    | `/medicos`             | Listar médicos           |
+| GET    | `/medicos/{id}`        | Ver detalle de médico    |
+
+#### Pacientes
+| Método | Endpoint                       | Descripción                     |
+|--------|--------------------------------|---------------------------------|
+| GET    | `/pacientes/{id}`              | Ver información de paciente     |
+| GET    | `/pacientesConCitas`           | Listar pacientes con citas      |
+| GET    | `/pacientesPorEPS/{eps}`       | Buscar pacientes por EPS        |
+
+---
+
+###  Endpoints Públicos (sin autenticación)
+| Método | Endpoint                       | Descripción                    |
+|--------|--------------------------------|--------------------------------|
+| GET    | `/citasConMedicos`             | Listar citas con médicos       |
+| GET    | `/citasPendientes`             | Listar citas pendientes        |
+| GET    | `/citasCompletadas`            | Listar citas completadas       |
+| GET    | `/citasPorFecha/{fecha}`       | Buscar citas por fecha         |
+| GET    | `/horariosDisponiblesPorMedico`| Horarios disponibles por médico|
+| GET    | `/medicosConEspecialidad`      | Médicos con especialidad       |
+| GET    | `/medicosConHorarios`          | Médicos con horarios           |
+| GET    | `/pacientesConCitas`           | Pacientes con citas agendadas  |
+| GET    | `/pacientesPorEPS/{eps}`       | Pacientes filtrados por EPS    |
+| GET    | `/contarCitasPaciente/{id}`    | Contar citas de un paciente    |
+
+---
+
+##  Roles y permisos
+- **Admin** → Control total sobre citas, médicos, pacientes, especialidades y horarios.  
+- **Médico** → Consulta de sus horarios y asignaciones.  
+- **Paciente** → Consulta de médicos, especialidades y su información personal.  
+- **Público** → Consulta de información general (citas pendientes, completadas, médicos disponibles).  
+
+### Autor
+Juan Pablo Barrera Caipa
