@@ -29,12 +29,15 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::get('citas/{id}', [CitasController::class, 'show']);
     Route::put('editarCitas/{id}', [CitasController::class, 'update']);
     Route::delete('eliminarCitas/{id}', [CitasController::class, 'destroy']);
+    Route::get('especialidades', [EspecialidadesController::class, 'index']);
     Route::post('crearEspecialidades', [EspecialidadesController::class, 'store']);
     Route::put('editarEspecialidades/{id}', [EspecialidadesController::class, 'update']); 
     Route::delete('eliminarEspecialidades/{id}', [EspecialidadesController::class, 'destroy']);
+    Route::get('horarios', [HorariosDisponiblesController::class, 'index']);
     Route::post('crearHorarios', [HorariosDisponiblesController::class, 'store']);
     Route::put('editarHorarios/{id}', [HorariosDisponiblesController::class, 'update']);  
     Route::delete('eliminarHorarios/{id}', [HorariosDisponiblesController::class, 'destroy']);
+    Route::get('medicos', [MedicosController::class, 'index']);
     Route::post('crearMedico', [MedicosController::class, 'store']);
     Route::put('editarMedico/{id}', [MedicosController::class, 'update']);
     Route::delete('eliminarMedico/{id}', [MedicosController::class, 'destroy']);
@@ -45,22 +48,33 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
 });
 
 Route::middleware(['auth:sanctum', 'role:medico'])->group(function () {
-    Route::get('horarios', [HorariosDisponiblesController::class, 'index']);
-    Route::get('horarios/{id}', [HorariosDisponiblesController::class, 'show']);
-    Route::get('horariosDisponiblesPorMedico', [HorariosDisponiblesController::class, 'horariosDisponiblesPorMedico']);
-    Route::get('medicosConEspecialidad', [MedicosController::class, 'medicosConEspecialidades']);
-    Route::get('medicosConHorarios', [MedicosController::class, 'medicosConHorarios']);
+
+    Route::get('citas', [CitasController::class, 'index']);
+    Route::post('crearCitas', [CitasController::class, 'store']);
+    Route::get('citas/{id}', [CitasController::class, 'show']);
+    Route::put('editarCitas/{id}', [CitasController::class, 'update']);
+    Route::delete('eliminarCitas/{id}', [CitasController::class, 'destroy']);
+    Route::post('crearEspecialidades', [EspecialidadesController::class, 'store']);
+    Route::put('editarEspecialidades/{id}', [EspecialidadesController::class, 'update']);
+    Route::delete('eliminarEspecialidades/{id}', [EspecialidadesController::class, 'destroy']);
+    Route::post('crearHorarios', [HorariosDisponiblesController::class, 'store']);
+    Route::put('editarHorarios/{id}', [HorariosDisponiblesController::class, 'update']);
+    Route::delete('eliminarHorarios/{id}', [HorariosDisponiblesController::class, 'destroy']);
+    Route::get('pacientes', [PacientesController::class, 'index']);
+    Route::post('crearPacientes', [PacientesController::class, 'store']);
+    Route::put('editarPacientes/{id}', [PacientesController::class, 'update']);
+    Route::delete('eliminarPacientes/{id}', [PacientesController::class, 'destroy']);
 });
 
 
 Route::middleware(['auth:sanctum', 'role:paciente'])->group(function () {
+
     Route::get('especialidades', [EspecialidadesController::class, 'index']);
     Route::get('especialidades/{id}', [EspecialidadesController::class, 'show']);
+    Route::get('horarios', [HorariosDisponiblesController::class, 'index']);
     Route::get('medicos', [MedicosController::class, 'index']);
     Route::get('medicos/{id}', [MedicosController::class, 'show']);
     Route::get('pacientes/{id}', [PacientesController::class, 'show']);
-    Route::get('pacientesConCitas', [PacientesController::class, 'pacientesConCitas']);
-    Route::get('pacientesPorEPS/{eps}', [PacientesController::class, 'pacientesPorEPS']);
 });
 
 
@@ -71,6 +85,6 @@ Route::get('citasPorFecha/{fecha}', [CitasController::class, 'citasPorFecha']);
 Route::get('horariosDisponiblesPorMedico', [HorariosDisponiblesController::class, 'horariosDisponiblesPorMedico']);
 Route::get('medicosConEspecialidad', [MedicosController::class, 'medicosConEspecialidades']);
 Route::get('medicosConHorarios', [MedicosController::class, 'medicosConHorarios']);
-Route::get('pacientesConCitas', [PacientesController::class, 'pacientesConCitas']);
+Route::get('pacientesConCitas', [PacientesController::class, 'pacientesConCitas']); 
 Route::get('pacientesPorEPS/{eps}', [PacientesController::class, 'pacientesPorEPS']);
 Route::get('contarCitasPaciente/{id}', [PacientesController::class, 'ContarCitasPaciente']);

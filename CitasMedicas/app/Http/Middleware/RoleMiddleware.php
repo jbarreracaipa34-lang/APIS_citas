@@ -15,11 +15,21 @@ class RoleMiddleware
      */
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
-        if(!$request->user()) {
+        $user = $request->user();
+
+        if (!$user) {
             return response()->json(['message' => 'No se tiene acceso a esta ruta'], 401);
         }
 
-        if(!in_array($request->user()->role, $roles)){
+        $actualRole = trim(strtolower($user->role));
+        $expectedRoles = array_map(fn($r) => trim(strtolower($r)), $roles);
+
+        if (!in_array($actualRole, $expectedRoles)) {
+            \Log::warning('Acceso denegado por rol', [
+                'usuario_id' => $user->id,
+                'rol_usuario' => $user->role,
+                'roles_permitidos' => $roles
+            ]);
             return response()->json(['message' => 'NO se puede acceder'], 403);
         }
 
