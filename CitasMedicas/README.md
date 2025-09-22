@@ -1,61 +1,292 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# API de Gestión de Citas Médicas
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Esta API permite gestionar la información de citas, pacientes, médicos, especialidades, horarios disponibles, y roles (paciente, médico y administrador). La API está construida con **Laravel** y usa **Sanctum** para la autenticación.
 
-## About Laravel
+## Roles de Usuario
+Los roles disponibles en el sistema son:
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Admin**: Acceso completo para gestionar citas, especialidades, horarios, médicos y pacientes.
+- **Médico**: Gestiona sus citas, especialidades, horarios y pacientes asociados.
+- **Paciente**: Consulta especialidades, médicos, horarios y gestiona sus citas.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Autenticación
 
-## Learning Laravel
+### Registrar Usuario
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+`POST /registrar`
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Permite registrar un nuevo usuario.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+**Campos:**
 
-## Laravel Sponsors
+- `name` (string)
+- `email` (string)
+- `password` (string)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+**Respuesta:**
 
-### Premium Partners
+- `token` (string)
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### Login
 
-## Contributing
+`POST /login`
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Permite autenticar al usuario y obtener un token de acceso.
 
-## Code of Conduct
+**Campos:**
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- `email` (string)
+- `password` (string)
 
-## Security Vulnerabilities
+**Respuesta:**
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- `token` (string)
 
-## License
+### Obtener Información del Usuario
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+`GET /me`  
+Obtiene la información del usuario autenticado.
+
+**Headers:**
+
+- `Authorization: Bearer {token}`
+
+---
+
+## Endpoints para Administradores (`role:admin`)
+
+### Citas
+
+- **Listar Citas**  
+  `GET /citas`
+
+- **Crear Cita**  
+  `POST /crearCitas`
+
+- **Ver Cita**  
+  `GET /citas/{id}`
+
+- **Actualizar Cita**  
+  `PUT /editarCitas/{id}`
+
+- **Eliminar Cita**  
+  `DELETE /eliminarCitas/{id}`
+
+### Especialidades
+
+- **Listar Especialidades**  
+  `GET /especialidades`
+
+- **Crear Especialidad**  
+  `POST /crearEspecialidades`
+
+- **Actualizar Especialidad**  
+  `PUT /editarEspecialidades/{id}`
+
+- **Eliminar Especialidad**  
+  `DELETE /eliminarEspecialidades/{id}`
+
+### Horarios Disponibles
+
+- **Listar Horarios**  
+  `GET /horarios`
+
+- **Crear Horario**  
+  `POST /crearHorarios`
+
+- **Actualizar Horario**  
+  `PUT /editarHorarios/{id}`
+
+- **Eliminar Horario**  
+  `DELETE /eliminarHorarios/{id}`
+
+### Médicos
+
+- **Listar Médicos**  
+  `GET /medicos`
+
+- **Crear Médico**  
+  `POST /crearMedico`
+
+- **Actualizar Médico**  
+  `PUT /editarMedico/{id}`
+
+- **Eliminar Médico**  
+  `DELETE /eliminarMedico/{id}`
+
+### Pacientes
+
+- **Listar Pacientes**  
+  `GET /pacientes`
+
+- **Crear Paciente**  
+  `POST /crearPacientes`
+
+- **Actualizar Paciente**  
+  `PUT /editarPacientes/{id}`
+
+- **Eliminar Paciente**  
+  `DELETE /eliminarPacientes/{id}`
+
+---
+
+## Endpoints para Médicos (`role:medico`)
+
+### Citas
+
+- **Listar Citas**  
+  `GET /citas`
+
+- **Crear Cita**  
+  `POST /crearCitas`
+
+- **Ver Cita**  
+  `GET /citas/{id}`
+
+- **Actualizar Cita**  
+  `PUT /editarCitas/{id}`
+
+- **Eliminar Cita**  
+  `DELETE /eliminarCitas/{id}`
+
+### Especialidades
+
+- **Crear Especialidad**  
+  `POST /crearEspecialidades`
+
+- **Actualizar Especialidad**  
+  `PUT /editarEspecialidades/{id}`
+
+- **Eliminar Especialidad**  
+  `DELETE /eliminarEspecialidades/{id}`
+
+### Horarios Disponibles
+
+- **Crear Horario**  
+  `POST /crearHorarios`
+
+- **Actualizar Horario**  
+  `PUT /editarHorarios/{id}`
+
+- **Eliminar Horario**  
+  `DELETE /eliminarHorarios/{id}`
+
+### Pacientes
+
+- **Listar Pacientes**  
+  `GET /pacientes`
+
+- **Crear Paciente**  
+  `POST /crearPacientes`
+
+- **Actualizar Paciente**  
+  `PUT /editarPacientes/{id}`
+
+- **Eliminar Paciente**  
+  `DELETE /eliminarPacientes/{id}`
+
+---
+
+## Endpoints para Pacientes (`role:paciente`)
+
+### Especialidades
+
+- **Listar Especialidades**  
+  `GET /especialidades`
+
+- **Ver Especialidad**  
+  `GET /especialidades/{id}`
+
+### Médicos
+
+- **Listar Médicos**  
+  `GET /medicos`
+
+- **Ver Médico**  
+  `GET /medicos/{id}`
+
+### Horarios Disponibles
+
+- **Listar Horarios**  
+  `GET /horarios`
+
+### Pacientes
+
+- **Ver Paciente**  
+  `GET /pacientes/{id}`
+
+### Citas
+
+- **Crear Cita**  
+  `POST /crearCitas`
+
+- **Ver Cita**  
+  `GET /citas/{id}`
+
+- **Actualizar Cita**  
+  `PUT /editarCitas/{id}`
+
+- **Eliminar Cita**  
+  `DELETE /eliminarCitas/{id}`
+
+---
+
+## Endpoints Públicos (sin autenticación requerida)
+
+- **Citas con Médicos**  
+  `GET /citasConMedicos`
+
+- **Citas Pendientes**  
+  `GET /citasPendientes`
+
+- **Citas Completadas**  
+  `GET /citasCompletadas`
+
+- **Citas por Fecha**  
+  `GET /citasPorFecha/{fecha}`
+
+- **Horarios Disponibles por Médico**  
+  `GET /horariosDisponiblesPorMedico`
+
+- **Médicos con Especialidad**  
+  `GET /medicosConEspecialidad`
+
+- **Médicos con Horarios**  
+  `GET /medicosConHorarios`
+
+- **Pacientes con Citas**  
+  `GET /pacientesConCitas`
+
+- **Pacientes por EPS**  
+  `GET /pacientesPorEPS/{eps}`
+
+- **Contar Citas de un Paciente**  
+  `GET /contarCitasPaciente/{id}`
+
+---
+
+## Requisitos
+
+- **PHP 8.x**  
+- **Laravel 9.x o superior**  
+- **MySQL 5.x o superior**
+
+## Instalación
+
+1. Ejecutar `composer install` para instalar las dependencias de Laravel.  
+2. Configurar el archivo `.env` con sus credenciales de base de datos (DB_DATABASE, DB_USERNAME, DB_PASSWORD, etc.).  
+3. Generar la clave de la aplicación: `php artisan key:generate`.  
+4. Ejecutar las migraciones para crear las tablas: `php artisan migrate`.  
+5. Para crear un modelo junto con su controlador y modelo se usa:  
+   `php artisan make:model NombreModelo -mc`  
+6. Si se necesita un middleware personalizado:  
+   `php artisan make:middleware NombreMiddleware`  
+7. Inicia el servidor de desarrollo con: `php artisan serve`
+
+---
+
+## Hecho por:
+
+Juan Pablo Barrera Caipa

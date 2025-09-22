@@ -75,6 +75,10 @@ Route::middleware(['auth:sanctum', 'role:paciente'])->group(function () {
     Route::get('medicos', [MedicosController::class, 'index']);
     Route::get('medicos/{id}', [MedicosController::class, 'show']);
     Route::get('pacientes/{id}', [PacientesController::class, 'show']);
+    Route::post('crearCitas', [CitasController::class, 'store']);
+    Route::get('citas/{id}', [CitasController::class, 'show']);
+    Route::put('editarCitas/{id}', [CitasController::class, 'update']);
+    Route::delete('eliminarCitas/{id}', [CitasController::class, 'destroy']);
 });
 
 
