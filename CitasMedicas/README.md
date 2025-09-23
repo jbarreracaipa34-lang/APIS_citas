@@ -1,292 +1,150 @@
-# API de Gestión de Citas Médicas
+#  API de Gestión de Citas Médicas
 
-Esta API permite gestionar la información de citas, pacientes, médicos, especialidades, horarios disponibles, y roles (paciente, médico y administrador). La API está construida con **Laravel** y usa **Sanctum** para la autenticación.
+Esta API ha sido desarrollada para la **gestión de citas médicas** por parte de los usuarios.  
 
-## Roles de Usuario
-Los roles disponibles en el sistema son:
-
-- **Admin**: Acceso completo para gestionar citas, especialidades, horarios, médicos y pacientes.
-- **Médico**: Gestiona sus citas, especialidades, horarios y pacientes asociados.
-- **Paciente**: Consulta especialidades, médicos, horarios y gestiona sus citas.
+Permite realizar operaciones de registro, consulta, modificación y eliminación de citas, además de gestionar médicos, pacientes y especialidades.
 
 ---
 
-## Autenticación
-
-### Registrar Usuario
-
-`POST /registrar`
-
-Permite registrar un nuevo usuario.
-
-**Campos:**
-
-- `name` (string)
-- `email` (string)
-- `password` (string)
-
-**Respuesta:**
-
-- `token` (string)
-
-### Login
-
-`POST /login`
-
-Permite autenticar al usuario y obtener un token de acceso.
-
-**Campos:**
-
-- `email` (string)
-- `password` (string)
-
-**Respuesta:**
-
-- `token` (string)
-
-### Obtener Información del Usuario
-
-`GET /me`  
-Obtiene la información del usuario autenticado.
-
-**Headers:**
-
-- `Authorization: Bearer {token}`
+## Características principales
+- Registro de pacientes y médicos.
+- Creación, consulta, actualización y cancelación de citas.
+- Gestión de especialidades médicas.
+- Autenticación de usuarios mediante **sanctum**
+- Arquitectura basada en **MVC (Modelo-Vista-Controlador)**.
+- Implementado con **laravel**.
 
 ---
 
-## Endpoints para Administradores (`role:admin`)
+## Autenticación con Laravel Sanctum
 
-### Citas
+Para garantizar la seguridad de la API de citas médicas, se implementa **Laravel Sanctum**.  
 
-- **Listar Citas**  
-  `GET /citas`
-
-- **Crear Cita**  
-  `POST /crearCitas`
-
-- **Ver Cita**  
-  `GET /citas/{id}`
-
-- **Actualizar Cita**  
-  `PUT /editarCitas/{id}`
-
-- **Eliminar Cita**  
-  `DELETE /eliminarCitas/{id}`
-
-### Especialidades
-
-- **Listar Especialidades**  
-  `GET /especialidades`
-
-- **Crear Especialidad**  
-  `POST /crearEspecialidades`
-
-- **Actualizar Especialidad**  
-  `PUT /editarEspecialidades/{id}`
-
-- **Eliminar Especialidad**  
-  `DELETE /eliminarEspecialidades/{id}`
-
-### Horarios Disponibles
-
-- **Listar Horarios**  
-  `GET /horarios`
-
-- **Crear Horario**  
-  `POST /crearHorarios`
-
-- **Actualizar Horario**  
-  `PUT /editarHorarios/{id}`
-
-- **Eliminar Horario**  
-  `DELETE /eliminarHorarios/{id}`
-
-### Médicos
-
-- **Listar Médicos**  
-  `GET /medicos`
-
-- **Crear Médico**  
-  `POST /crearMedico`
-
-- **Actualizar Médico**  
-  `PUT /editarMedico/{id}`
-
-- **Eliminar Médico**  
-  `DELETE /eliminarMedico/{id}`
-
-### Pacientes
-
-- **Listar Pacientes**  
-  `GET /pacientes`
-
-- **Crear Paciente**  
-  `POST /crearPacientes`
-
-- **Actualizar Paciente**  
-  `PUT /editarPacientes/{id}`
-
-- **Eliminar Paciente**  
-  `DELETE /eliminarPacientes/{id}`
+Esto permite a los usuarios autenticarse mediante **tokens personales** y acceder solo a los recursos autorizados.
 
 ---
 
-## Endpoints para Médicos (`role:medico`)
+###  Instalación de Sanctum
+1. Instalar Sanctum:
 
-### Citas
+```Json
+composer require laravel/sanctum
+```
 
-- **Listar Citas**  
-  `GET /citas`
+## Endpoints de la API
 
-- **Crear Cita**  
-  `POST /crearCitas`
-
-- **Ver Cita**  
-  `GET /citas/{id}`
-
-- **Actualizar Cita**  
-  `PUT /editarCitas/{id}`
-
-- **Eliminar Cita**  
-  `DELETE /eliminarCitas/{id}`
-
-### Especialidades
-
-- **Crear Especialidad**  
-  `POST /crearEspecialidades`
-
-- **Actualizar Especialidad**  
-  `PUT /editarEspecialidades/{id}`
-
-- **Eliminar Especialidad**  
-  `DELETE /eliminarEspecialidades/{id}`
-
-### Horarios Disponibles
-
-- **Crear Horario**  
-  `POST /crearHorarios`
-
-- **Actualizar Horario**  
-  `PUT /editarHorarios/{id}`
-
-- **Eliminar Horario**  
-  `DELETE /eliminarHorarios/{id}`
-
-### Pacientes
-
-- **Listar Pacientes**  
-  `GET /pacientes`
-
-- **Crear Paciente**  
-  `POST /crearPacientes`
-
-- **Actualizar Paciente**  
-  `PUT /editarPacientes/{id}`
-
-- **Eliminar Paciente**  
-  `DELETE /eliminarPacientes/{id}`
+La API está protegida con **Laravel Sanctum** y un middleware de roles.  
+Dependiendo del rol (**admin, medico, paciente**) se habilitan diferentes operaciones.
 
 ---
 
-## Endpoints para Pacientes (`role:paciente`)
-
-### Especialidades
-
-- **Listar Especialidades**  
-  `GET /especialidades`
-
-- **Ver Especialidad**  
-  `GET /especialidades/{id}`
-
-### Médicos
-
-- **Listar Médicos**  
-  `GET /medicos`
-
-- **Ver Médico**  
-  `GET /medicos/{id}`
-
-### Horarios Disponibles
-
-- **Listar Horarios**  
-  `GET /horarios`
-
-### Pacientes
-
-- **Ver Paciente**  
-  `GET /pacientes/{id}`
-
-### Citas
-
-- **Crear Cita**  
-  `POST /crearCitas`
-
-- **Ver Cita**  
-  `GET /citas/{id}`
-
-- **Actualizar Cita**  
-  `PUT /editarCitas/{id}`
-
-- **Eliminar Cita**  
-  `DELETE /eliminarCitas/{id}`
+###  Autenticación
+| Método | Endpoint     | Descripción                  |
+|--------|-------------|------------------------------|
+| POST   | `/registrar` | Registro de usuario          |
+| POST   | `/login`    | Inicio de sesión             |
+| GET    | `/me`       | Ver perfil del usuario logueado *(requiere token)* |
+| POST   | `/logout`   | Cerrar sesión *(requiere token)* |
 
 ---
 
-## Endpoints Públicos (sin autenticación requerida)
+###  Endpoints para **Admin**
+*(requiere rol: admin)*
 
-- **Citas con Médicos**  
-  `GET /citasConMedicos`
+#### Citas
+| Método | Endpoint              | Descripción             |
+|--------|-----------------------|-------------------------|
+| GET    | `/citas`              | Listar todas las citas |
+| POST   | `/crearCitas`         | Crear una nueva cita   |
+| GET    | `/citas/{id}`         | Ver detalle de una cita|
+| PUT    | `/editarCitas/{id}`   | Editar cita existente  |
+| DELETE | `/eliminarCitas/{id}` | Eliminar cita          |
 
-- **Citas Pendientes**  
-  `GET /citasPendientes`
+#### Especialidades
+| Método | Endpoint                       | Descripción                 |
+|--------|--------------------------------|-----------------------------|
+| POST   | `/crearEspecialidades`         | Crear nueva especialidad    |
+| PUT    | `/editarEspecialidades/{id}`   | Editar especialidad         |
+| DELETE | `/eliminarEspecialidades/{id}` | Eliminar especialidad       |
 
-- **Citas Completadas**  
-  `GET /citasCompletadas`
+#### Horarios
+| Método | Endpoint                 | Descripción                 |
+|--------|--------------------------|-----------------------------|
+| POST   | `/crearHorarios`         | Crear horario disponible    |
+| PUT    | `/editarHorarios/{id}`   | Editar horario              |
+| DELETE | `/eliminarHorarios/{id}` | Eliminar horario            |
 
-- **Citas por Fecha**  
-  `GET /citasPorFecha/{fecha}`
+#### Médicos
+| Método | Endpoint               | Descripción              |
+|--------|------------------------|--------------------------|
+| POST   | `/crearMedico`         | Registrar nuevo médico   |
+| PUT    | `/editarMedico/{id}`   | Editar médico            |
+| DELETE | `/eliminarMedico/{id}` | Eliminar médico          |
 
-- **Horarios Disponibles por Médico**  
-  `GET /horariosDisponiblesPorMedico`
-
-- **Médicos con Especialidad**  
-  `GET /medicosConEspecialidad`
-
-- **Médicos con Horarios**  
-  `GET /medicosConHorarios`
-
-- **Pacientes con Citas**  
-  `GET /pacientesConCitas`
-
-- **Pacientes por EPS**  
-  `GET /pacientesPorEPS/{eps}`
-
-- **Contar Citas de un Paciente**  
-  `GET /contarCitasPaciente/{id}`
-
----
-
-## Requisitos
-
-- **PHP 8.x**  
-- **Laravel 9.x o superior**  
-- **MySQL 5.x o superior**
-
-## Instalación
-
-1. Ejecutar `composer install` para instalar las dependencias de Laravel.  
-2. Configurar el archivo `.env` con sus credenciales de base de datos (DB_DATABASE, DB_USERNAME, DB_PASSWORD, etc.).  
-3. Generar la clave de la aplicación: `php artisan key:generate`.  
-4. Ejecutar las migraciones para crear las tablas: `php artisan migrate`.  
-5. Para crear un modelo junto con su controlador y modelo se usa:  
-   `php artisan make:model NombreModelo -mc`  
-6. Si se necesita un middleware personalizado:  
-   `php artisan make:middleware NombreMiddleware`  
-7. Inicia el servidor de desarrollo con: `php artisan serve`
+#### Pacientes
+| Método | Endpoint                   | Descripción              |
+|--------|----------------------------|--------------------------|
+| GET    | `/pacientes`              | Listar pacientes         |
+| POST   | `/crearPacientes`         | Registrar paciente       |
+| PUT    | `/editarPacientes/{id}`   | Editar paciente          |
+| DELETE | `/eliminarPacientes/{id}` | Eliminar paciente        |
 
 ---
 
-## Hecho por:
+###  Endpoints para **Médico**
+*(requiere rol: medico)*
 
+| Método | Endpoint                           | Descripción                             |
+|--------|------------------------------------|-----------------------------------------|
+| GET    | `/horarios`                        | Listar todos los horarios               |
+| GET    | `/horarios/{id}`                   | Ver horario específico                  |
+| GET    | `/horariosDisponiblesPorMedico`    | Listar horarios disponibles del médico  |
+| GET    | `/medicosConEspecialidad`          | Médicos con especialidad asignada       |
+| GET    | `/medicosConHorarios`              | Médicos con horarios disponibles        |
+
+---
+
+###  Endpoints para **Paciente**
+*(requiere rol: paciente)*
+
+#### Especialidades y médicos
+| Método | Endpoint               | Descripción              |
+|--------|------------------------|--------------------------|
+| GET    | `/especialidades`      | Listar especialidades    |
+| GET    | `/especialidades/{id}` | Ver especialidad         |
+| GET    | `/medicos`             | Listar médicos           |
+| GET    | `/medicos/{id}`        | Ver detalle de médico    |
+
+#### Pacientes
+| Método | Endpoint                       | Descripción                     |
+|--------|--------------------------------|---------------------------------|
+| GET    | `/pacientes/{id}`              | Ver información de paciente     |
+| GET    | `/pacientesConCitas`           | Listar pacientes con citas      |
+| GET    | `/pacientesPorEPS/{eps}`       | Buscar pacientes por EPS        |
+
+---
+
+###  Endpoints Públicos (sin autenticación)
+| Método | Endpoint                       | Descripción                    |
+|--------|--------------------------------|--------------------------------|
+| GET    | `/citasConMedicos`             | Listar citas con médicos       |
+| GET    | `/citasPendientes`             | Listar citas pendientes        |
+| GET    | `/citasCompletadas`            | Listar citas completadas       |
+| GET    | `/citasPorFecha/{fecha}`       | Buscar citas por fecha         |
+| GET    | `/horariosDisponiblesPorMedico`| Horarios disponibles por médico|
+| GET    | `/medicosConEspecialidad`      | Médicos con especialidad       |
+| GET    | `/medicosConHorarios`          | Médicos con horarios           |
+| GET    | `/pacientesConCitas`           | Pacientes con citas agendadas  |
+| GET    | `/pacientesPorEPS/{eps}`       | Pacientes filtrados por EPS    |
+| GET    | `/contarCitasPaciente/{id}`    | Contar citas de un paciente    |
+
+---
+
+##  Roles y permisos
+- **Admin** → Control total sobre citas, médicos, pacientes, especialidades y horarios.  
+- **Médico** → Consulta de sus horarios y asignaciones.  
+- **Paciente** → Consulta de médicos, especialidades y su información personal.  
+- **Público** → Consulta de información general (citas pendientes, completadas, médicos disponibles).  
+
+### Autor
 Juan Pablo Barrera Caipa

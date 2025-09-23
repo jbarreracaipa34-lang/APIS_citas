@@ -80,16 +80,12 @@ class CitasController extends Controller
     }
 
     public function citasConMedicos(){
-    $data = DB::table('citas')
-        ->join('medicos', 'citas.medicos_id', '=', 'medicos.id')
-        ->join('pacientes', 'citas.pacientes_id', '=', 'pacientes.id')
-        ->join('users as medico_users', function($join) {$join->on('medicos.email', '=', 'medico_users.email')
-        ->orOn('medicos.nombre', '=', 'medico_users.name');
-        })
-        ->select('citas.id', 'citas.fechaCita', 'citas.horaCita', 'citas.pacientes_id', 'citas.medicos_id',
-            'pacientes.user_id', 'medico_users.id as medico_user_id', 'medicos.nombre as medico_nombre', 
-            'medicos.apellido as medico_apellido', 'pacientes.nombre as paciente_nombre', 'pacientes.apellido as paciente_apellido'
-        )->get();
+    $data = DB::table('citas')->join('medicos', 'citas.medicos_id', '=', 'medicos.id')
+    ->join('pacientes', 'citas.pacientes_id', '=', 'pacientes.id')->join('users as medico_users', function($join) {
+    $join->on('medicos.email', '=', 'medico_users.email')->orOn('medicos.nombre', '=', 'medico_users.name');})
+    ->select('citas.id', 'citas.fechaCita', 'citas.horaCita', 'citas.estado', 'citas.observaciones', 'citas.pacientes_id', 
+    'citas.medicos_id', 'pacientes.user_id', 'medico_users.id as medico_user_id', 'medicos.nombre as medico_nombre', 
+    'medicos.apellido as medico_apellido', 'pacientes.nombre as paciente_nombre', 'pacientes.apellido as paciente_apellido')->get();   
     return response()->json($data, 200);
     }
 

@@ -87,12 +87,35 @@ class PacientesController extends Controller
         return response()->json(['message' => 'Paciente eliminado correctamente']);
     }
 
-    public function pacientesConCitas(){
-        $data = DB::table('pacientes')->join('citas', 'pacientes.id', '=', 'citas.pacientes_id')
-        ->select('pacientes.id', 'pacientes.nombre', 'pacientes.apellido', 'citas.fechaCita', 'citas.horaCita')->get();
+    public function pacientesConCitas(Request $request) {
+    try {
+        $user = $request->user();
+        if (!$user || !in_array($user->role, ['admin', 'medico'])) {
+            return response()->json(['error' => 'Acceso denegado'], 403);
+        }
+        $query = DB::table('pacientes')->join('citas', 'pacientes.id', '=', 'citas.pacientes_id')->select(
+        'pacientes.id', 'pacientes.nombre', 'pacientes.apellido', 'pacientes.numeroDocumento as documento',
+        'pacientes.telefono', 'pacientes.email', 'pacientes.fechaNacimiento', 'pacientes.genero', 'pacientes.eps', 
+        'citas.id as cita_id', 'citas.fechaCita', 'citas.horaCita', 'citas.estado', 'citas.medicos_id');        
+        if ($user->role === 'medico') {
+            $medico = DB::table('medicos')->where('email', $user->email)->first();
+            
+            if ($medico) {
+                $query->where('citas.medicos_id', $medico->id);
+            } else {
+                return response()->json([], 200);
+            }
+        }
+        
+        $data = $query->orderByRaw("CASE WHEN estado = 'pendiente' THEN 0 ELSE 1 END")
+        ->orderBy('citas.fechaCita', 'DESC')->get();
         return response()->json($data, 200);
-
+        } catch (\Exception $e) {
+            \Log::error('Error en pacientesConCitas: ' . $e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
+
 
     public function pacientesPorEPS($eps) {
         $data = DB::table('pacientes')->where('eps', $eps)->select('nombre', 'apellido', 'eps')->get();

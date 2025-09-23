@@ -82,13 +82,24 @@ class MedicosController extends Controller
         return response()->json(['message' => 'Medico eliminado correctamente']);
     }
 
-    public function medicosConEspecialidades(){
-    $data = DB::table('medicos')
-        ->leftJoin('especialidades', 'medicos.especialidad_id', '=', 'especialidades.id')
-        ->select('medicos.id', 'medicos.nombre', 'medicos.apellido', 'medicos.numeroLicencia', 'medicos.telefono', 'medicos.email', 'medicos.especialidad_id', 'especialidades.nombre as especialidad_nombre')
-        ->get();
-    return response()->json($data, 200);
+    public function medicosConEspecialidades()
+    {
+        $medicos = DB::table('medicos')
+            ->leftJoin('especialidades', 'medicos.especialidad_id', '=', 'especialidades.id')
+            ->select('medicos.id', 'medicos.nombre', 'medicos.apellido', 'medicos.numeroLicencia',
+                'medicos.telefono', 'medicos.email', 'medicos.especialidad_id',
+                'especialidades.nombre as especialidad_nombre')->get();
+        foreach ($medicos as $medico) {
+            $horarios = DB::table('horariosdisponibles')
+                ->where('medicos_id', $medico->id)
+                ->select('diaSemana', 'horaInicio', 'horaFin')
+                ->get();
+            $medico->horarios_disponibles = $horarios;
+        }
+        return response()->json($medicos, 200);
     }
+
+
 
     public function medicosConHorarios(){
         $data = DB::table('medicos')->join('horariosdisponibles', 'medicos.id', '=', 'horariosdisponibles.medicos_id')
