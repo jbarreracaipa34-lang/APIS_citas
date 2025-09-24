@@ -93,3 +93,4 @@ Route::get('medicosConEspecialidad', [MedicosController::class, 'medicosConEspec
 Route::get('medicosConHorarios', [MedicosController::class, 'medicosConHorarios']);
 Route::get('pacientesPorEPS/{eps}', [PacientesController::class, 'pacientesPorEPS']);
 Route::get('contarCitasPaciente/{id}', [PacientesController::class, 'ContarCitasPaciente']);
+Route::get('EspecialidadesConMedicos', [EspecialidadesController::class, 'especialidadesConMedicos']);

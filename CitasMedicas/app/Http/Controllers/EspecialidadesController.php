@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Especialidades;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class EspecialidadesController extends Controller
 {
@@ -69,5 +70,13 @@ class EspecialidadesController extends Controller
 
         $especialidad->delete();
         return response()->json(['message' => 'Especialidad eliminada correctamente']);
+    }
+
+    public function especialidadesConMedicos() {
+    $data = DB::table('especialidades')->join('medicos', 'especialidades.id', '=', 'medicos.especialidad_id')->select(
+    'especialidades.id', 'especialidades.nombre', 'especialidades.descripcion', 'medicos.id as medico_id',
+    'medicos.nombre as medico_nombre', 'medicos.apellido', 'medicos.numeroLicencia', 'medicos.telefono', 
+    'medicos.email')->orderBy('especialidades.nombre')->orderBy('medicos.nombre')->get();        
+    return response()->json($data, 200);
     }
 }
