@@ -8,11 +8,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class RoleMiddleware
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
         $user = $request->user();
@@ -21,16 +16,28 @@ class RoleMiddleware
             return response()->json(['message' => 'No se tiene acceso a esta ruta'], 401);
         }
 
+        $allowedRoles = [];
+        foreach ($roles as $role) {
+            if (str_contains($role, ',')) {
+                $allowedRoles = array_merge($allowedRoles, explode(',', $role));
+            } else {
+                $allowedRoles[] = $role;
+            }
+        }
+
         $actualRole = trim(strtolower($user->role));
-        $expectedRoles = array_map(fn($r) => trim(strtolower($r)), $roles);
+        $expectedRoles = array_map(fn($r) => trim(strtolower($r)), $allowedRoles);
+
+        
 
         if (!in_array($actualRole, $expectedRoles)) {
-            \Log::warning('Acceso denegado por rol', [
-                'usuario_id' => $user->id,
-                'rol_usuario' => $user->role,
-                'roles_permitidos' => $roles
-            ]);
-            return response()->json(['message' => 'NO se puede acceder'], 403);
+            return response()->json([
+                'message' => 'NO se puede acceder',
+                'debug' => [
+                    'user_role' => $actualRole,
+                    'allowed_roles' => $expectedRoles
+                ]
+            ], 403);
         }
 
         return $next($request);

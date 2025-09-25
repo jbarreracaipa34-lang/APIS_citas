@@ -6,6 +6,7 @@ use App\Models\Pacientes;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 
 class PacientesController extends Controller
 {
@@ -125,5 +126,81 @@ class PacientesController extends Controller
     public function ContarCitasPaciente($id){
     $data = DB::table('citas')->where('pacientes_id', '=', $id)->count();
     return response()->json(['paciente_id' => $id, 'totalCitas' => $data]);
+    }
+
+    public function RegistrarPacienteConUserId(Request $request){
+        try {
+            $request->validate([
+                'nombre' => 'required|string|max:255',
+                'apellido' => 'required|string|max:255',
+                'tipoDocumento' => 'required|string|in:CC,TI,CE,PP',
+                'numeroDocumento' => 'required|string|max:255',
+                'fechaNacimiento' => 'nullable|date|before:today',
+                'genero' => 'required|string|in:M,F,O',
+                'telefono' => 'required|string|max:255',
+                'email' => 'required|email|max:255',
+                'direccion' => 'nullable|string|max:255',
+                'eps' => 'nullable|string|max:255',
+            ]);
+
+            $userId = auth()->id();
+            
+            if (!$userId) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Usuario no autenticado'
+                ], 401);
+            }
+
+            $existePaciente = DB::table('pacientes')
+                ->where('numeroDocumento', $request->numeroDocumento)
+                ->orWhere('email', $request->email)
+                ->first();
+
+            if ($existePaciente) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Ya existe un paciente con este documento o email'
+                ], 409);
+            }
+
+            $pacienteId = DB::table('pacientes')->insertGetId([
+                'nombre' => $request->nombre,
+                'apellido' => $request->apellido,
+                'tipoDocumento' => $request->tipoDocumento,
+                'numeroDocumento' => $request->numeroDocumento,
+                'fechaNacimiento' => $request->fechaNacimiento,
+                'genero' => $request->genero,
+                'telefono' => $request->telefono,
+                'email' => $request->email,
+                'direccion' => $request->direccion,
+                'eps' => $request->eps,
+                'user_id' => $userId,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ]);
+
+            $pacienteCreado = DB::table('pacientes')->select('pacientes.*', 'users.name as created_by_name', 'users.email as created_by_email', 'users.role as created_by_role')
+            ->leftJoin('users', 'pacientes.user_id', '=', 'users.id')->where('pacientes.id', $pacienteId)->first();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Paciente registrado exitosamente',
+                'data' => $pacienteCreado,
+                'created_by' => [
+                    'user_id' => $userId,
+                    'name' => $pacienteCreado->created_by_name,
+                    'email' => $pacienteCreado->created_by_email,
+                    'role' => $pacienteCreado->created_by_role
+                ]
+            ], 201);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error de validación',
+                'errors' => $e->errors()
+            ], 422);
+        }
     }
 }

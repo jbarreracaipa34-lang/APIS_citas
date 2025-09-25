@@ -9,7 +9,6 @@ use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
@@ -22,57 +21,63 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
 });
 
-Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
+Route::middleware(['auth:sanctum', 'role:admin,paciente'])->group(function () {
+    Route::get('especialidades', [EspecialidadesController::class, 'index']);
+    Route::get('especialidades/{id}', [EspecialidadesController::class, 'show']);
+});
 
+Route::middleware(['auth:sanctum', 'role:admin,paciente'])->group(function () {
+    Route::get('medicos', [MedicosController::class, 'index']);
+    Route::get('medicos/{id}', [MedicosController::class, 'show']);
+});
+
+Route::middleware(['auth:sanctum', 'role:admin,paciente'])->group(function () {
+    Route::get('horarios', [HorariosDisponiblesController::class, 'index']);
+});
+
+Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::get('citas', [CitasController::class, 'index']);
     Route::post('crearCitas', [CitasController::class, 'store']);
     Route::get('citas/{id}', [CitasController::class, 'show']);
     Route::put('editarCitas/{id}', [CitasController::class, 'update']);
     Route::delete('eliminarCitas/{id}', [CitasController::class, 'destroy']);
-    Route::get('especialidades', [EspecialidadesController::class, 'index']);
+    
     Route::post('crearEspecialidades', [EspecialidadesController::class, 'store']);
     Route::put('editarEspecialidades/{id}', [EspecialidadesController::class, 'update']); 
     Route::delete('eliminarEspecialidades/{id}', [EspecialidadesController::class, 'destroy']);
-    Route::get('horarios', [HorariosDisponiblesController::class, 'index']);
+    
     Route::post('crearHorarios', [HorariosDisponiblesController::class, 'store']);
     Route::put('editarHorarios/{id}', [HorariosDisponiblesController::class, 'update']);  
     Route::delete('eliminarHorarios/{id}', [HorariosDisponiblesController::class, 'destroy']);
-    Route::get('medicos', [MedicosController::class, 'index']);
+    
     Route::post('crearMedico', [MedicosController::class, 'store']);
     Route::put('editarMedico/{id}', [MedicosController::class, 'update']);
     Route::delete('eliminarMedico/{id}', [MedicosController::class, 'destroy']);
+});
+
+Route::middleware(['auth:sanctum', 'role:admin,medico'])->group(function () {
     Route::get('pacientes', [PacientesController::class, 'index']); 
+    Route::post('registrarPacienteConUserId', [PacientesController::class, 'RegistrarPacienteConUserId']);
     Route::post('crearPacientes', [PacientesController::class, 'store']); 
     Route::put('editarPacientes/{id}', [PacientesController::class, 'update']);  
     Route::delete('eliminarPacientes/{id}', [PacientesController::class, 'destroy']);
 });
 
 Route::middleware(['auth:sanctum', 'role:medico'])->group(function () {
-
     Route::get('citas', [CitasController::class, 'index']);
     Route::get('citas/{id}', [CitasController::class, 'show']);
     Route::put('editarCitas/{id}', [CitasController::class, 'update']);
     Route::delete('eliminarCitas/{id}', [CitasController::class, 'destroy']);
+    
     Route::post('crearEspecialidades', [EspecialidadesController::class, 'store']);
     Route::put('editarEspecialidades/{id}', [EspecialidadesController::class, 'update']);
     Route::delete('eliminarEspecialidades/{id}', [EspecialidadesController::class, 'destroy']);
     Route::post('crearHorarios', [HorariosDisponiblesController::class, 'store']);
     Route::put('editarHorarios/{id}', [HorariosDisponiblesController::class, 'update']);
     Route::delete('eliminarHorarios/{id}', [HorariosDisponiblesController::class, 'destroy']);
-    Route::get('pacientes', [PacientesController::class, 'index']);
-    Route::post('crearPacientes', [PacientesController::class, 'store']);
-    Route::put('editarPacientes/{id}', [PacientesController::class, 'update']);
-    Route::delete('eliminarPacientes/{id}', [PacientesController::class, 'destroy']);
 });
 
-
 Route::middleware(['auth:sanctum', 'role:paciente'])->group(function () {
-
-    Route::get('especialidades', [EspecialidadesController::class, 'index']);
-    Route::get('especialidades/{id}', [EspecialidadesController::class, 'show']);
-    Route::get('horarios', [HorariosDisponiblesController::class, 'index']);
-    Route::get('medicos', [MedicosController::class, 'index']);
-    Route::get('medicos/{id}', [MedicosController::class, 'show']);
     Route::get('pacientes/{id}', [PacientesController::class, 'show']);
     Route::post('crearCitas', [CitasController::class, 'store']);
     Route::get('citas/{id}', [CitasController::class, 'show']);
