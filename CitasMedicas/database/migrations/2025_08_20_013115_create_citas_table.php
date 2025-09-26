@@ -15,7 +15,7 @@ return new class extends Migration
             $table->date('fechaCita');
             $table->time('horaCita');
             $table->enum('estado', ['pendiente', 'completada', 'cancelada'])->default('pendiente');
-            $table->string('observaciones');
+            $table->string('observaciones')->nullable();
             $table->timestamps();
         });
     }
