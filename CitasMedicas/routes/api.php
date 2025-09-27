@@ -64,15 +64,6 @@ Route::middleware(['auth:sanctum', 'role:admin,medico'])->group(function () {
     Route::post('registrarPacienteConUserId', [PacientesController::class, 'RegistrarPacienteConUserId']);
 });
 
-Route::middleware(['auth:sanctum', 'role:medico'])->group(function () {
-    Route::post('crearEspecialidades', [EspecialidadesController::class, 'store']);
-    Route::put('editarEspecialidades/{id}', [EspecialidadesController::class, 'update']);
-    Route::delete('eliminarEspecialidades/{id}', [EspecialidadesController::class, 'destroy']);
-    Route::post('crearHorarios', [HorariosDisponiblesController::class, 'store']);
-    Route::put('editarHorarios/{id}', [HorariosDisponiblesController::class, 'update']);
-    Route::delete('eliminarHorarios/{id}', [HorariosDisponiblesController::class, 'destroy']);
-});
-
 Route::get('citasConMedicos', [CitasController::class, 'citasConMedicos']);
 Route::get('citasPendientes', [CitasController::class, 'citasPendientes']);
 Route::get('citasCompletadas', [CitasController::class, 'citasCompletadas']);
