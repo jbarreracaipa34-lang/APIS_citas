@@ -77,9 +77,9 @@ class HorariosDisponiblesController extends Controller
     }
 
     public function horariosDisponiblesPorMedico() {
-        $data = DB::table('horariosdisponibles')->join('medicos', 'horariosdisponibles.medicos_id', '=', 'medicos.id')
-            ->select('medicos.nombre', 'medicos.apellido', 'horariosdisponibles.diaSemana', 'horariosdisponibles.horaInicio', 'horariosdisponibles.horaFin')->get();
-        return response()->json($data, 200);
+    $data = DB::table('horariosdisponibles')->join('medicos', 'horariosdisponibles.medicos_id', '=', 'medicos.id')
+    ->select('horariosdisponibles.id','medicos.nombre', 'medicos.apellido', 'horariosdisponibles.diaSemana', 
+    'horariosdisponibles.horaInicio', 'horariosdisponibles.horaFin')->get();
+    return response()->json($data, 200);
     }
-
 }

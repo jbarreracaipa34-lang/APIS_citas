@@ -78,15 +78,46 @@ class PacientesController extends Controller
     }
 
     public function destroy(string $id)
-    {
+{
+    try {
+        DB::beginTransaction();
+        
         $paciente = Pacientes::find($id);
-        if (!$paciente) {
+        if (!$paciente) {DB::rollBack();
             return response()->json(['message' => 'Paciente no encontrado'], 404);
         }
-
+        
+        $emailPaciente = $paciente->email;
+        
         $paciente->delete();
-        return response()->json(['message' => 'Paciente eliminado correctamente']);
+        
+        DB::table('users')
+            ->where('email', $emailPaciente)
+            ->where('role', 'paciente')
+            ->delete();
+        
+        DB::commit();
+        
+        return response()->json([
+            'message' => 'Paciente y usuario eliminados correctamente',
+            'success' => true
+        ], 200);
+        
+    } catch (\Exception $e) {
+        DB::rollBack();
+        
+        if (strpos($e->getMessage(), 'foreign key constraint') !== false) {
+            return response()->json([
+                'message' => 'No se puede eliminar el paciente porque tiene citas asociadas. Elimina primero las citas.'
+            ], 409);
+        }
+        
+        return response()->json([
+            'message' => 'Error al eliminar el paciente y su usuario',
+            'error' => $e->getMessage()
+        ], 500);
     }
+}
 
     public function pacientesConCitas(Request $request) {
     try {

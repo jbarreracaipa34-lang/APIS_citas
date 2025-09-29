@@ -6,6 +6,7 @@ use App\Models\Medicos;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use App\Models\User;
 
 class MedicosController extends Controller
 {
@@ -71,16 +72,26 @@ class MedicosController extends Controller
     }
 
     public function destroy(string $id)
-    {
-        $medico = Medicos::find($id);
+{
+    $medico = Medicos::find($id);
 
-        if (!$medico) {
-            return response()->json(['message' => 'Medico no encontrado'], 404);
-        }
-
-        $medico->delete();
-        return response()->json(['message' => 'Medico eliminado correctamente']);
+    if (!$medico) {
+        return response()->json(['message' => 'Medico no encontrado'], 404);
     }
+
+    $email = $medico->email;
+
+    $medico->delete();
+
+    if ($email) {
+        $user = User::where('email', $email)->first();
+        if ($user) {
+            $user->delete();
+        }
+    }
+
+    return response()->json(['message' => 'Medico y usuario eliminados correctamente']);
+}
 
     public function medicosConEspecialidades()
     {

@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('pacientes', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id')->unique();
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->string('nombre');
             $table->string('apellido');
             $table->enum('tipoDocumento', ['CC', 'TI', 'CE']);

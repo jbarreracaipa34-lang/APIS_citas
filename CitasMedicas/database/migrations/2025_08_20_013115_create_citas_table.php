@@ -14,7 +14,7 @@ return new class extends Migration
             $table->foreignId('medicos_id')->constrained('medicos')->onDelete('cascade');
             $table->date('fechaCita');
             $table->time('horaCita');
-            $table->enum('estado', ['pendiente', 'completada', 'cancelada'])->default('pendiente');
+            $table->enum('estado', ['pendiente', 'completada', 'cancelada', 'confirmada'])->default('pendiente');
             $table->string('observaciones')->nullable();
             $table->timestamps();
         });

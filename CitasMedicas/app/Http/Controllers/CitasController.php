@@ -20,7 +20,7 @@ class CitasController extends Controller
         $validator = Validator::make($request->all(), [
             'fechaCita' => 'required|date',
             'horaCita' => 'required',
-            'estado' => 'required|in:pendiente,completada,cancelada',
+            'estado' => 'required|in:pendiente,completada,cancelada,confirmada',
             'observaciones' => 'nullable|string',
             'pacientes_id' => 'required|integer',
             'medicos_id' => 'required|integer',
@@ -54,7 +54,7 @@ class CitasController extends Controller
         $validator = Validator::make($request->all(), [
             'fechaCita' => 'date',
             'horaCita' => '',
-            'estado' => 'required|in:pendiente,completada,cancelada',
+            'estado' => 'required|in:pendiente,completada,cancelada,confirmada',
             'observaciones' => 'nullable|string',
             'pacientes_id' => 'integer',
             'medicos_id' => 'integer',

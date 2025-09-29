@@ -73,10 +73,13 @@ class EspecialidadesController extends Controller
     }
 
     public function especialidadesConMedicos() {
-    $data = DB::table('especialidades')->join('medicos', 'especialidades.id', '=', 'medicos.especialidad_id')->select(
-    'especialidades.id', 'especialidades.nombre', 'especialidades.descripcion', 'medicos.id as medico_id',
-    'medicos.nombre as medico_nombre', 'medicos.apellido', 'medicos.numeroLicencia', 'medicos.telefono', 
-    'medicos.email')->orderBy('especialidades.nombre')->orderBy('medicos.nombre')->get();        
-    return response()->json($data, 200);
+    try {
+        $especialidades = Especialidades::with(['medicos' => function($query) {
+        $query->select('id', 'especialidad_id', 'nombre', 'apellido', 'numeroLicencia', 'telefono', 'email');
+        }])->get();
+        return response()->json($especialidades, 200);
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Error al cargar especialidades: ' . $e->getMessage()], 500);
     }
+}
 }
