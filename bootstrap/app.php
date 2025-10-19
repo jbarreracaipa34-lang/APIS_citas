@@ -17,7 +17,6 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
             'admin.auth' => \App\Http\Middleware\AdminAuthMiddleware::class,
-            'auth' => \App\Http\Middleware\AuthMiddleware::class,
         ]);
         $middleware->append(HandleCors::class);
     })
