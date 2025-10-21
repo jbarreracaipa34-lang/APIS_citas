@@ -104,14 +104,18 @@ class MedicosController extends Controller
             ->leftJoin('especialidades', 'medicos.especialidad_id', '=', 'especialidades.id')
             ->select('medicos.id', 'medicos.nombre', 'medicos.apellido', 'medicos.numeroLicencia',
                 'medicos.telefono', 'medicos.email', 'medicos.especialidad_id',
-                'especialidades.nombre as especialidad_nombre')->get();
+                'especialidades.nombre as especialidad_nombre')
+            ->get();
+        
+        $horarios = DB::table('horariosdisponibles')
+            ->select('medicos_id', 'diaSemana', 'horaInicio', 'horaFin')
+            ->get()
+            ->groupBy('medicos_id');
+        
         foreach ($medicos as $medico) {
-            $horarios = DB::table('horariosdisponibles')
-                ->where('medicos_id', $medico->id)
-                ->select('diaSemana', 'horaInicio', 'horaFin')
-                ->get();
-            $medico->horarios_disponibles = $horarios;
+            $medico->horarios_disponibles = $horarios->get($medico->id, collect());
         }
+        
         return response()->json($medicos, 200);
     }
 

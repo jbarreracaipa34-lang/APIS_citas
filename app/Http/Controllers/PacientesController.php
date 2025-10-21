@@ -28,7 +28,7 @@ class PacientesController extends Controller
             'genero' => 'required|in:M,F',
             'telefono' => 'required|string',
             'email' => 'required|email|unique:pacientes,email',
-            'direccion' => 'nullable|string',
+            'direccion' => 'string',
             'eps' => 'required|string',
             'password' => 'required|string|min:8|confirmed'
         ]);
@@ -53,25 +53,56 @@ class PacientesController extends Controller
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'nombre' => 'required|string',
-            'apellido' => 'required|string',
-            'tipoDocumento' => 'required|in:CC,TI,CE',
-            'numeroDocumento' => 'required|string',
-            'fechaNacimiento' => 'required|date',
-            'genero' => 'required|in:M,F',
-            'telefono' => 'required|string',
-            'email' => 'nullable|string',
-            'direccion' => 'string',
-            'eps' => 'required|string',
-        ]);
+        try {
+            \Log::info('Creando paciente con datos:', $request->all());
+            
+            $validator = Validator::make($request->all(), [
+                'nombre' => 'required|string|max:255',
+                'apellido' => 'required|string|max:255',
+                'tipoDocumento' => 'required|in:CC,TI,CE',
+                'numeroDocumento' => 'required|string|unique:pacientes,numeroDocumento',
+                'fechaNacimiento' => 'required|date',
+                'genero' => 'required|in:M,F',
+                'telefono' => 'required|string',
+                'email' => 'nullable|email|unique:pacientes,email',
+                'direccion' => 'nullable|string',
+                'eps' => 'required|string',
+                'password' => 'required|string|min:8'
+            ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            if ($validator->fails()) {
+                \Log::error('Error de validación:', $validator->errors()->toArray());
+                return response()->json($validator->errors(), 422);
+            }
+
+            $data = $validator->validated();
+            $data['password'] = Hash::make($data['password']);
+
+            \Log::info('Datos validados:', $data);
+
+            $paciente = Pacientes::create($data);
+            
+            \Log::info('Paciente creado exitosamente:', $paciente->toArray());
+            
+            return response()->json([
+                'message' => 'Paciente creado exitosamente',
+                'paciente' => $paciente,
+                'success' => true
+            ], 201);
+            
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \Log::error('Error de validación:', $e->errors()->toArray());
+            return response()->json([
+                'message' => 'Error de validación',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            \Log::error('Error al crear paciente:', ['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            return response()->json([
+                'message' => 'Error al crear paciente: ' . $e->getMessage(),
+                'success' => false
+            ], 500);
         }
-
-        $paciente = Pacientes::create($validator->validated());
-        return response()->json($paciente);
     }
 
     public function show(string $id)
