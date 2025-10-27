@@ -16,7 +16,13 @@ class AppointmentObserver
     public function created(Citas $citas): void
     {
         if ($citas->estado === 'pendiente') {
+            // Enviar notificación al paciente
             $citas->paciente->notify(new AppointmentScheduled($citas));
+            
+            // Enviar notificación al médico
+            if ($citas->medico && $citas->medico->email) {
+                $citas->medico->notify(new AppointmentScheduled($citas));
+            }
         }
     }
 
@@ -30,18 +36,31 @@ class AppointmentObserver
             $newStatus = $citas->estado;
 
             if ($oldStatus !== $newStatus) {
+                // Notificar tanto al paciente como al médico
                 switch ($newStatus) {
                     case 'pendiente':
                         $citas->paciente->notify(new AppointmentScheduled($citas));
+                        if ($citas->medico && $citas->medico->email) {
+                            $citas->medico->notify(new AppointmentScheduled($citas));
+                        }
                         break;
                     case 'confirmada':
                         $citas->paciente->notify(new AppointmentConfirmed($citas));
+                        if ($citas->medico && $citas->medico->email) {
+                            $citas->medico->notify(new AppointmentConfirmed($citas));
+                        }
                         break;
                     case 'cancelada':
                         $citas->paciente->notify(new AppointmentCancelled($citas));
+                        if ($citas->medico && $citas->medico->email) {
+                            $citas->medico->notify(new AppointmentCancelled($citas));
+                        }
                         break;
                     case 'completada':
                         $citas->paciente->notify(new AppointmentCompleted($citas));
+                        if ($citas->medico && $citas->medico->email) {
+                            $citas->medico->notify(new AppointmentCompleted($citas));
+                        }
                         break;
                 }
             }
@@ -54,7 +73,12 @@ class AppointmentObserver
     public function deleted(Citas $citas): void
     {
         if ($citas->estado !== 'cancelada' && $citas->estado !== 'completada') {
+            // Enviar notificación tanto al paciente como al médico cuando se elimina una cita
             $citas->paciente->notify(new AppointmentCancelled($citas));
+            
+            if ($citas->medico && $citas->medico->email) {
+                $citas->medico->notify(new AppointmentCancelled($citas));
+            }
         }
     }
 

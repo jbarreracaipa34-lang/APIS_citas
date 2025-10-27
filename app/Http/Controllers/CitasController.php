@@ -85,6 +85,21 @@ class CitasController extends Controller
         return response()->json(['message' => 'Cita eliminada correctamente']);
     }
 
+    public function cancelar(string $id)
+    {
+        $cita = Citas::find($id);
+        if (!$cita) {
+            return response()->json(['message' => 'Cita no encontrada'], 404);
+        }
+
+        if ($cita->estado === 'cancelada') {
+            return response()->json(['message' => 'La cita ya está cancelada'], 400);
+        }
+
+        $cita->update(['estado' => 'cancelada']);
+        return response()->json($cita);
+    }
+
     public function citasConMedicos(){
         $data = DB::table('citas')
             ->join('medicos', 'citas.medicos_id', '=', 'medicos.id')

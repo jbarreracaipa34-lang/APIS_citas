@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
 class Medicos extends Model
 {
-    use HasApiTokens;
+    use HasApiTokens, Notifiable;
     
     protected $fillable = ['nombre', 'apellido', 'numeroLicencia', 'telefono', 'email', 'especialidad_id', 'password'];
 

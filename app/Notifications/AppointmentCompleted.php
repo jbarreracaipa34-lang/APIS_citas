@@ -37,22 +37,44 @@ class AppointmentCompleted extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $mailMessage = (new MailMessage)
-            ->subject('✅ Su Cita Médica ha sido Completada')
-            ->greeting('Estimado ' . $this->cita->paciente->nombre . ' ' . $this->cita->paciente->apellido . ',')
-            ->line('Su cita fue con el médico: **' . $this->cita->medico->nombre . ' ' . $this->cita->medico->apellido . '**')
-            ->line('')
-            ->line('📋 **INFORMACIÓN DE LA CITA COMPLETADA:**')
-            ->line('')
-            ->line('👨‍⚕️ **Médico:** ' . $this->cita->medico->nombre . ' ' . $this->cita->medico->apellido)
-            ->line('📅 **Fecha:** ' . $this->cita->fechaCita)
-            ->line('🕐 **Hora:** ' . $this->cita->horaCita)
-            ->line('✅ **Estado:** Completada');
+        $esPaciente = $notifiable->email === $this->cita->paciente->email;
+        
+        if ($esPaciente) {
+            $mailMessage = (new MailMessage)
+                ->subject('✅ Su Cita Médica ha sido Completada')
+                ->greeting('Estimado ' . $this->cita->paciente->nombre . ' ' . $this->cita->paciente->apellido . ',')
+                ->line('Su cita fue con el médico: **' . $this->cita->medico->nombre . ' ' . $this->cita->medico->apellido . '**')
+                ->line('')
+                ->line('📋 **INFORMACIÓN DE LA CITA COMPLETADA:**')
+                ->line('')
+                ->line('👨‍⚕️ **Médico:** ' . $this->cita->medico->nombre . ' ' . $this->cita->medico->apellido)
+                ->line('📅 **Fecha:** ' . $this->cita->fechaCita)
+                ->line('🕐 **Hora:** ' . $this->cita->horaCita)
+                ->line('✅ **Estado:** Completada');
 
-        if (!empty($this->cita->observaciones)) {
-            $mailMessage->line('')
-                ->line('📝 **Observaciones del Médico:**')
-                ->line($this->cita->observaciones);
+            if (!empty($this->cita->observaciones)) {
+                $mailMessage->line('')
+                    ->line('📝 **Observaciones del Médico:**')
+                    ->line($this->cita->observaciones);
+            }
+        } else {
+            $mailMessage = (new MailMessage)
+                ->subject('✅ Cita Completada')
+                ->greeting('Estimado Dr. ' . $this->cita->medico->nombre . ' ' . $this->cita->medico->apellido . ',')
+                ->line('La cita con el paciente **' . $this->cita->paciente->nombre . ' ' . $this->cita->paciente->apellido . '** ha sido marcada como completada.')
+                ->line('')
+                ->line('📋 **INFORMACIÓN DE LA CITA:**')
+                ->line('')
+                ->line('👤 **Paciente:** ' . $this->cita->paciente->nombre . ' ' . $this->cita->paciente->apellido)
+                ->line('📅 **Fecha:** ' . $this->cita->fechaCita)
+                ->line('🕐 **Hora:** ' . $this->cita->horaCita)
+                ->line('✅ **Estado:** Completada');
+
+            if (!empty($this->cita->observaciones)) {
+                $mailMessage->line('')
+                    ->line('📝 **Observaciones:**')
+                    ->line($this->cita->observaciones);
+            }
         }
 
         return $mailMessage

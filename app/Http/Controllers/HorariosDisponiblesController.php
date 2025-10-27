@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\HorariosDisponibles;
+use App\Models\Citas;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -28,8 +29,48 @@ class HorariosDisponiblesController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        $horario = HorariosDisponibles::create($validator->validated());
-        return response()->json($horario, 201);
+        $data = $validator->validated();
+        
+        $horaInicio = \DateTime::createFromFormat('H:i', $data['horaInicio']);
+        $horaFin = \DateTime::createFromFormat('H:i', $data['horaFin']);
+        
+        if (!$horaInicio || !$horaFin) {
+            return response()->json(['error' => 'Formato de hora inválido'], 422);
+        }
+        
+        if ($horaFin <= $horaInicio) {
+            return response()->json(['error' => 'La hora de fin debe ser posterior a la hora de inicio'], 422);
+        }
+        
+        $horariosCreados = [];
+        $horaActual = clone $horaInicio;
+        
+        while ($horaActual < $horaFin) {
+            $horaSiguiente = clone $horaActual;
+            $horaSiguiente->add(new \DateInterval('PT30M'));
+            
+            if ($horaSiguiente > $horaFin) {
+                $horaSiguiente = clone $horaFin;
+            }
+            
+            $horarioData = [
+                'medicos_id' => $data['medicos_id'],
+                'diaSemana' => $data['diaSemana'],
+                'horaInicio' => $horaActual->format('H:i'),
+                'horaFin' => $horaSiguiente->format('H:i')
+            ];
+            
+            $horario = HorariosDisponibles::create($horarioData);
+            $horariosCreados[] = $horario;
+            
+            $horaActual->add(new \DateInterval('PT30M'));
+        }
+        
+        return response()->json([
+            'message' => 'Horarios creados exitosamente',
+            'horarios' => $horariosCreados,
+            'total' => count($horariosCreados)
+        ], 201);
     }
 
     public function show(string $id)
@@ -70,6 +111,24 @@ class HorariosDisponiblesController extends Controller
         $horario = HorariosDisponibles::find($id);
         if (!$horario) {
             return response()->json(['message' => 'HorarioDisponible no encontrado'], 404);
+        }
+
+        // Verificar si hay citas asociadas a este horario específico
+        try {
+            $citasAsociadas = Citas::where('medicos_id', $horario->medicos_id)
+                ->where('horaCita', $horario->horaInicio)
+                ->whereIn('estado', ['pendiente', 'confirmada'])
+                ->get();
+
+            if ($citasAsociadas->count() > 0) {
+                return response()->json([
+                    'message' => 'No se puede eliminar el horario porque tiene citas asociadas',
+                    'citas_asociadas' => $citasAsociadas->count()
+                ], 409);
+            }
+        } catch (\Exception $e) {
+            \Log::error('Error verificando citas asociadas: ' . $e->getMessage());
+            // Si hay error en la verificación, permitir la eliminación
         }
 
         $horario->delete();

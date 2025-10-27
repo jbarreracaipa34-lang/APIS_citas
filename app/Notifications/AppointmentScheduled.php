@@ -37,22 +37,49 @@ class AppointmentScheduled extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $mailMessage = (new MailMessage)
-            ->subject('📅 Su Cita Médica ha sido Programada')
-            ->greeting('Estimado ' . $this->cita->paciente->nombre . ' ' . $this->cita->paciente->apellido . ',')
-            ->line('Su cita está con el médico: **' . $this->cita->medico->nombre . ' ' . $this->cita->medico->apellido . '**')
-            ->line('')
-            ->line('📋 **INFORMACIÓN DE SU CITA:**')
-            ->line('')
-            ->line('👨‍⚕️ **Médico:** ' . $this->cita->medico->nombre . ' ' . $this->cita->medico->apellido)
-            ->line('📅 **Fecha:** ' . $this->cita->fechaCita)
-            ->line('🕐 **Hora:** ' . $this->cita->horaCita)
-            ->line('📊 **Estado:** Pendiente de Confirmación');
+        // Determinar si el destinatario es el paciente o el médico
+        $esPaciente = $notifiable->email === $this->cita->paciente->email;
+        
+        if ($esPaciente) {
+            // Email para el paciente
+            $mailMessage = (new MailMessage)
+                ->subject('📅 Su Cita Médica ha sido Programada')
+                ->greeting('Estimado ' . $this->cita->paciente->nombre . ' ' . $this->cita->paciente->apellido . ',')
+                ->line('Su cita está con el médico: **' . $this->cita->medico->nombre . ' ' . $this->cita->medico->apellido . '**')
+                ->line('')
+                ->line('📋 **INFORMACIÓN DE SU CITA:**')
+                ->line('')
+                ->line('👨‍⚕️ **Médico:** ' . $this->cita->medico->nombre . ' ' . $this->cita->medico->apellido)
+                ->line('📅 **Fecha:** ' . $this->cita->fechaCita)
+                ->line('🕐 **Hora:** ' . $this->cita->horaCita)
+                ->line('📊 **Estado:** Pendiente de Confirmación');
 
-        if (!empty($this->cita->observaciones)) {
-            $mailMessage->line('')
-                ->line('📝 **Observaciones del Médico:**')
-                ->line($this->cita->observaciones);
+            if (!empty($this->cita->observaciones)) {
+                $mailMessage->line('')
+                    ->line('📝 **Observaciones del Médico:**')
+                    ->line($this->cita->observaciones);
+            }
+        } else {
+            // Email para el médico
+            $mailMessage = (new MailMessage)
+                ->subject('📅 Nueva Cita Programada')
+                ->greeting('Estimado Dr. ' . $this->cita->medico->nombre . ' ' . $this->cita->medico->apellido . ',')
+                ->line('Tiene una nueva cita programada con el paciente: **' . $this->cita->paciente->nombre . ' ' . $this->cita->paciente->apellido . '**')
+                ->line('')
+                ->line('📋 **INFORMACIÓN DE LA CITA:**')
+                ->line('')
+                ->line('👤 **Paciente:** ' . $this->cita->paciente->nombre . ' ' . $this->cita->paciente->apellido)
+                ->line('📧 **Email:** ' . $this->cita->paciente->email)
+                ->line('📱 **Teléfono:** ' . $this->cita->paciente->telefono)
+                ->line('📅 **Fecha:** ' . $this->cita->fechaCita)
+                ->line('🕐 **Hora:** ' . $this->cita->horaCita)
+                ->line('📊 **Estado:** Pendiente de Confirmación');
+
+            if (!empty($this->cita->observaciones)) {
+                $mailMessage->line('')
+                    ->line('📝 **Observaciones:**')
+                    ->line($this->cita->observaciones);
+            }
         }
 
         return $mailMessage

@@ -52,6 +52,7 @@ Route::middleware('admin.auth')->group(function () {
     Route::post('crearCitas', [CitasController::class, 'store']);
     Route::put('editarCitas/{id}', [CitasController::class, 'update']);
     Route::delete('eliminarCitas/{id}', [CitasController::class, 'destroy']);
+    Route::put('cancelarCitas/{id}', [CitasController::class, 'cancelar']);
     
     Route::get('admin', [AdminController::class, 'index']);
     Route::get('admin/{id}', [AdminController::class, 'show']);
@@ -67,5 +68,4 @@ Route::get('citasPorFecha/{fecha}', [CitasController::class, 'citasPorFecha']);
 Route::get('medicosConEspecialidad', [MedicosController::class, 'medicosConEspecialidades']);
 Route::get('medicosConHorarios', [MedicosController::class, 'medicosConHorarios']);
 Route::get('pacientesPorEPS/{eps}', [PacientesController::class, 'pacientesPorEPS']);
-Route::get('contarCitasPaciente/{id}', [PacientesController::class, 'ContarCitasPaciente']);
-Route::get('EspecialidadesConMedicos', [EspecialidadesController::class, 'especialidadesConMedicos']);
+Route::get('contarCitasPaciente/{id}', [PacientesController::class, 'ContarCitasPaciente']);Route::get('EspecialidadesConMedicos', [EspecialidadesController::class, 'especialidadesConMedicos']);

@@ -37,22 +37,44 @@ class AppointmentCancelled extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $mailMessage = (new MailMessage)
-            ->subject('❌ Su Cita Médica ha sido Cancelada')
-            ->greeting('Estimado ' . $this->cita->paciente->nombre . ' ' . $this->cita->paciente->apellido . ',')
-            ->line('Su cita estaba con el médico: **' . $this->cita->medico->nombre . ' ' . $this->cita->medico->apellido . '**')
-            ->line('')
-            ->line('📋 **INFORMACIÓN DE LA CITA CANCELADA:**')
-            ->line('')
-            ->line('👨‍⚕️ **Médico:** ' . $this->cita->medico->nombre . ' ' . $this->cita->medico->apellido)
-            ->line('📅 **Fecha:** ' . $this->cita->fechaCita)
-            ->line('🕐 **Hora:** ' . $this->cita->horaCita)
-            ->line('❌ **Estado:** Cancelada');
+        $esPaciente = $notifiable->email === $this->cita->paciente->email;
+        
+        if ($esPaciente) {
+            $mailMessage = (new MailMessage)
+                ->subject('❌ Su Cita Médica ha sido Cancelada')
+                ->greeting('Estimado ' . $this->cita->paciente->nombre . ' ' . $this->cita->paciente->apellido . ',')
+                ->line('Su cita estaba con el médico: **' . $this->cita->medico->nombre . ' ' . $this->cita->medico->apellido . '**')
+                ->line('')
+                ->line('📋 **INFORMACIÓN DE LA CITA CANCELADA:**')
+                ->line('')
+                ->line('👨‍⚕️ **Médico:** ' . $this->cita->medico->nombre . ' ' . $this->cita->medico->apellido)
+                ->line('📅 **Fecha:** ' . $this->cita->fechaCita)
+                ->line('🕐 **Hora:** ' . $this->cita->horaCita)
+                ->line('❌ **Estado:** Cancelada');
 
-        if (!empty($this->cita->observaciones)) {
-            $mailMessage->line('')
-                ->line('📝 **Observaciones del Médico:**')
-                ->line($this->cita->observaciones);
+            if (!empty($this->cita->observaciones)) {
+                $mailMessage->line('')
+                    ->line('📝 **Observaciones del Médico:**')
+                    ->line($this->cita->observaciones);
+            }
+        } else {
+            $mailMessage = (new MailMessage)
+                ->subject('❌ Cita Cancelada')
+                ->greeting('Estimado Dr. ' . $this->cita->medico->nombre . ' ' . $this->cita->medico->apellido . ',')
+                ->line('La cita con el paciente **' . $this->cita->paciente->nombre . ' ' . $this->cita->paciente->apellido . '** ha sido cancelada.')
+                ->line('')
+                ->line('📋 **INFORMACIÓN DE LA CITA CANCELADA:**')
+                ->line('')
+                ->line('👤 **Paciente:** ' . $this->cita->paciente->nombre . ' ' . $this->cita->paciente->apellido)
+                ->line('📅 **Fecha:** ' . $this->cita->fechaCita)
+                ->line('🕐 **Hora:** ' . $this->cita->horaCita)
+                ->line('❌ **Estado:** Cancelada');
+
+            if (!empty($this->cita->observaciones)) {
+                $mailMessage->line('')
+                    ->line('📝 **Observaciones:**')
+                    ->line($this->cita->observaciones);
+            }
         }
 
         return $mailMessage
